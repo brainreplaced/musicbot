@@ -7,28 +7,25 @@ from aiotg import Bot
 from database import db, text_search
 
 greeting = """
-    ✋ Welcome to Telegram Music Catalog! 🎧
-We are a community of music fans who are eager to share what we love.
-Just send your favourite tracks as audio files and they'll be available for everyone, on any device.
-To search through the catalog, just type artist name or track title. Nothing found? Feel free to fix it!
+    ✋ Добро пожаловать в каталог музыки Что-то нужное =) 🎧
 """
 
 help = """
-To search through the catalog, just type artist name or track title.
-Inside a group chat you can use /music command, for example:
-/music Summer of Haze
+Для поиска по каталогу набери название трека или исполнителя. 
+Если добавить бота в группу - можно использовать команду /music, как пример:
+/music Жесткая музяка
 
-By default, the search is fuzzy but you can use double quotes to filter results:
+К сожалению, поиск не очень четкий, но можно использовать двойные кавычки, чтобы уточнить поиск
 "summer of haze"
 "sad family"
 
-To make an even stricter search, just quote both terms:
+Чтобы сделать поиск еще более строгим, просто оберни обе фразы в кавычки:
 "aes dana" "haze"
 """
 
 not_found = """
-We don't have anything matching your search yet :/
-But you can fix it by sending us the tracks you love as audio files!
+К сожалению ничего не нашлось =(
+Но ты можешь это пофиксить, отправив сюда нужную музяку
 """
 
 
@@ -46,7 +43,7 @@ async def add_track(chat, audio):
         return
 
     if "title" not in audio:
-        await chat.send_text("Sorry, but your track is missing title")
+        await chat.send_text("Сорян, но у трека нет названия")
         return
 
     doc = audio.copy()
@@ -64,7 +61,7 @@ def music(chat, match):
     return search_tracks(chat, match.group(1))
 
 
-@bot.command(r'\((\d+)/\d+\) show more for "(.+)"')
+@bot.command(r'\((\d+)/\d+\) показать больше для "(.+)"')
 def more(chat, match):
     page = int(match.group(1)) + 1
     return search_tracks(chat, match.group(2), page)
@@ -104,7 +101,7 @@ async def stop(chat, match):
     await db.users.remove({ "id": tuid })
 
     logger.info("%s quit", chat.sender)
-    await chat.send_text("Goodbye! We will miss you 😢")
+    await chat.send_text("Пока, скучать не буду 😜")
 
 
 @bot.command(r'/?help')
@@ -125,7 +122,7 @@ async def stats(chat, match):
     aggr = await cursor.to_list(1)
 
     if len(aggr) == 0:
-        return (await chat.send_text("Stats are not yet available"))
+        return (await chat.send_text("Статистика пока недоступна"))
 
     size = human_size(aggr[0]["size"])
     text = '%d tracks, %s' % (count, size)
